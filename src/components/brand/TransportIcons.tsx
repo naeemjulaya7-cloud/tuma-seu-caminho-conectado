@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { ComponentType, SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -74,7 +74,7 @@ export type TransportKey = "pe" | "chapa" | "bicicleta" | "mota" | "carro";
 export const TRANSPORTS: {
   key: TransportKey;
   label: string;
-  Icon: (p: IconProps) => JSX.Element;
+  Icon: ComponentType<IconProps>;
   note: string;
 }[] = [
   { key: "pe", label: "A pé", Icon: FootIcon, note: "Entregas curtas no bairro" },
