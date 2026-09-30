@@ -7,6 +7,7 @@ import { Footer } from "@/components/site/Footer";
 import { HeroMockup } from "@/components/product/HeroMockup";
 import { RouteStops } from "@/components/brand/RouteLine";
 import { TRANSPORTS } from "@/components/brand/TransportIcons";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,13 +47,15 @@ function Landing() {
 }
 
 function Hero() {
+  const { user } = useAuth();
+
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-5 pt-12 pb-16 lg:grid-cols-[minmax(0,1fr)_460px] lg:gap-8 lg:pt-20 lg:pb-24">
         <div className="max-w-xl lg:pt-6">
           <span className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-card px-3 py-1.5 text-xs font-semibold text-foreground">
             <span className="size-1.5 rounded-full bg-success" />
-            Disponível em Moçambique
+            <span>Entregadores verificados</span>
           </span>
 
           <h1 className="mt-6 text-[2.5rem] leading-[1.03] font-extrabold sm:text-[3.4rem]">
@@ -67,24 +70,44 @@ function Hero() {
           </h1>
 
           <p className="mt-7 max-w-md text-[17px] leading-relaxed text-muted-foreground">
-            Publique o pedido, receba candidaturas de entregadores próximos e escolha
-            quem leva a sua encomenda.
+            Publique o pedido, receba candidaturas de entregadores próximos e escolha quem leva a
+            sua encomenda.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link
-              to="/app"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-dark"
-            >
-              Solicitar entrega
-              <ArrowRight className="size-4" />
-            </Link>
-            <Link
-              to="/entregador"
-              className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-card px-5 py-3.5 text-sm font-bold text-foreground transition-colors hover:bg-secondary"
-            >
-              Ser entregador
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/app"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-dark"
+                >
+                  Abrir o meu painel
+                  <ArrowRight className="size-4" />
+                </Link>
+                <Link
+                  to="/entregas"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-card px-5 py-3.5 text-sm font-bold text-foreground transition-colors hover:bg-secondary"
+                >
+                  Ver entregas
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/criar-conta"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-dark"
+                >
+                  Criar conta
+                  <ArrowRight className="size-4" />
+                </Link>
+                <Link
+                  to="/entrar"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-card px-5 py-3.5 text-sm font-bold text-foreground transition-colors hover:bg-secondary"
+                >
+                  Entrar
+                </Link>
+              </>
+            )}
           </div>
 
           <dl className="mt-10 flex flex-wrap gap-x-8 gap-y-4 border-t border-border pt-6">
@@ -95,9 +118,7 @@ function Hero() {
             ].map(({ Icon, label }) => (
               <div key={label} className="flex items-center gap-2">
                 <Icon className="size-4 text-teal" />
-                <dt className="text-[13px] font-semibold text-muted-foreground">
-                  {label}
-                </dt>
+                <dt className="text-[13px] font-semibold text-muted-foreground">{label}</dt>
               </div>
             ))}
           </dl>
@@ -200,14 +221,12 @@ function HowItWorks() {
               }
             >
               <div className="flex gap-6">
-                <span className="font-display text-2xl font-extrabold text-primary/80 tabular-nums">
+                <span className="font-display text-2xl font-extrabold text-primary tabular-nums">
                   {s.n}
                 </span>
                 <div className="max-w-md">
                   <h3 className="text-xl">{s.title}</h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-                    {s.body}
-                  </p>
+                  <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{s.body}</p>
                 </div>
               </div>
             </li>
@@ -221,7 +240,10 @@ function HowItWorks() {
 const SAFETY = [
   { title: "BI verificado", body: "Documento conferido antes da primeira entrega." },
   { title: "Selfie de verificação", body: "A cara confere com o documento entregue." },
-  { title: "Telefone verificado", body: "Número confirmado por código SMS." },
+  {
+    title: "Telefone verificado",
+    body: "Número confirmado manualmente durante a revisão do entregador.",
+  },
   { title: "Histórico de entregas", body: "Avaliações e entregas anteriores à vista." },
   { title: "Código de recolha", body: "Só entrega a encomenda com o código certo." },
   { title: "Código de entrega", body: "Quem recebe confirma no destino." },
@@ -237,8 +259,8 @@ function Safety() {
             Sabe quem leva a sua encomenda.
           </h2>
           <p className="mt-4 max-w-md text-[15px] leading-relaxed text-teal-foreground/75">
-            Cada entregador passa por verificação antes de aparecer na sua lista. Cada
-            entrega tem dois códigos e um canal para reportar problemas.
+            Cada entregador passa por verificação antes de aparecer na sua lista. Cada entrega tem
+            dois códigos e um canal para reportar problemas.
           </p>
 
           <dl className="mt-10 grid gap-x-10 gap-y-7 sm:grid-cols-2">
@@ -302,9 +324,8 @@ function PeopleNearby() {
             Pessoas verificadas, perto de si.
           </h2>
           <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-            Qualquer pessoa verificada pode entregar — no bairro a pé, na cidade de
-            chapa, ou de bicicleta, mota e carro. Cada entrega feita conta para o
-            histórico e para a avaliação.
+            Qualquer pessoa verificada pode entregar — no bairro a pé, na cidade de chapa, ou de
+            bicicleta, mota e carro. Cada entrega feita conta para o histórico e para a avaliação.
           </p>
           <Link
             to="/ser-entregador"
@@ -330,25 +351,27 @@ function PeopleNearby() {
 }
 
 function FinalCta() {
+  const { user } = useAuth();
+
   return (
     <section className="border-t border-border bg-card paper">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-5 py-16 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="max-w-md text-2xl leading-tight sm:text-3xl">
-          Tem algo para enviar hoje?
+          {user ? "Tem algo para enviar hoje?" : "Pronto para começar na TUMA?"}
         </h2>
         <div className="flex flex-wrap gap-3">
           <Link
-            to="/app"
+            to={user ? "/app" : "/criar-conta"}
             className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-dark"
           >
-            Solicitar entrega
+            {user ? "Solicitar entrega" : "Criar conta"}
             <ArrowRight className="size-4" />
           </Link>
           <Link
-            to="/como-funciona"
+            to={user ? "/como-funciona" : "/entrar"}
             className="inline-flex items-center rounded-xl border border-border-strong bg-background px-5 py-3.5 text-sm font-bold"
           >
-            Ver como funciona
+            {user ? "Ver como funciona" : "Já tenho conta"}
           </Link>
         </div>
       </div>
